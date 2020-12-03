@@ -13,6 +13,9 @@ from datetime import datetime
 # 开启debug将会输出打卡填报的数据，关闭debug只会输出打卡成功或者失败，如果使用github actions，请务必设置该选项为False
 debug = False
 
+# 忽略网站的证书错误，这很不安全 :(
+verify_cert = False
+
 # 全局变量
 user = "USERNAME"
 passwd = "PASSWORD"
@@ -131,13 +134,14 @@ def message(key, title, body):
 
 def report(username, password):
     s = requests.Session()
+    s.verify = verify_cert  # 不验证证书
     header = {
         "User-Agent": "Mozilla/5.0 (Linux; Android 10;  AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36 wxwork/3.0.16 MicroMessenger/7.0.1 NetType/WIFI Language/zh"
     }
     s.headers.update(header)
 
     print(datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M:%S %Z"))
-    for i in range(60, 0, -1):
+    for i in range(randint(10, 60), 0, -1):
         print("\r等待{}秒后填报".format(i), end='')
         sleep(1)
 
